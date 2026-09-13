@@ -600,15 +600,11 @@ function showFinalResult(){
   })
   .then(r => {
     if(!r.ok) throw new Error('HTTP ' + r.status);
-    const el = document.getElementById('submitStatus');
-    if(el) el.innerHTML = '✅ Resultat registrerat';
-    if(el) el.style.color = '#00cc66';
+    showSubmitPopup('success');
   })
   .catch(err => {
     console.warn('HTTP-trigger misslyckades, öppnar OWA-fallback:', err);
-    const el = document.getElementById('submitStatus');
-    if(el) el.innerHTML = '⚠️ Automatisk rapportering misslyckades – öppnar mail';
-    if(el) el.style.color = '#ffaa00';
+    showSubmitPopup('error');
     const subject = encodeURIComponent('FG5000|' + (passed ? 'GODKAND' : 'EJ_GODKAND') + '|' + currentUser.name + '|' + currentUser.email + '|' + score + '|' + max + '|' + datum + '|' + sessionId);
     const body = encodeURIComponent(
       'NAMN: ' + currentUser.name + '\n' +
@@ -630,7 +626,7 @@ function showFinalResult(){
     <div style="text-align:center;padding:8px;">
       <div style="font-size:20px;font-weight:bold;color:${color};">${grade}</div>
       <div style="margin-top:4px;font-size:15px;color:#222;">${score} / ${max} poäng</div>
-      <div id="submitStatus" style="margin-top:8px;font-size:12px;color:#888;">Skickar resultat...</div>
+      <div id="submitStatus" style="margin-top:8px;font-size:12px;color:#888;"></div>
       <br>
       <button onclick="restartTraining()"
         style="margin-top:8px;padding:7px 16px;background:#333;color:white;
@@ -1157,6 +1153,25 @@ function finishQuiz(){
   showFinalResult();
 }
 
+function showSubmitPopup(type){
+  const popup = document.getElementById('submitPopup');
+  const icon = document.getElementById('submitPopupIcon');
+  const title = document.getElementById('submitPopupTitle');
+  const msg = document.getElementById('submitPopupMsg');
+  if(type === 'success'){
+    icon.textContent = '✅';
+    title.textContent = 'Resultat registrerat';
+    title.style.color = '#00cc66';
+    msg.textContent = 'Ditt resultat har skickats och registrerats automatiskt.';
+  } else {
+    icon.textContent = '⚠️';
+    title.textContent = 'Automatisk rapportering misslyckades';
+    title.style.color = '#ffaa00';
+    msg.textContent = 'Ett mail har öppnats i Outlook — skicka det utan att ändra något så registreras resultatet ändå.';
+  }
+  popup.style.display = 'flex';
+}
+
 function confirmForvarningRutin(){
   const check = document.getElementById('forvarningCheck');
   if(!check.checked) return;
@@ -1284,6 +1299,18 @@ function confirmForvarningRutin(){
       <button id='quizNextBtn3' onclick='finishQuiz()' style='display:none;width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#1a6e1a;color:white;cursor:pointer;'>Se mitt resultat →</button>
     </div>
 
+  </div>
+</div>
+
+<!-- Submit resultat popup -->
+<div id='submitPopup' style='display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:3000;align-items:center;justify-content:center;'>
+  <div style='background:#1e1e1e;border:1px solid #444;border-radius:12px;max-width:420px;width:90%;padding:32px;text-align:center;'>
+    <div id='submitPopupIcon' style='font-size:48px;margin-bottom:12px;'></div>
+    <div id='submitPopupTitle' style='font-size:18px;font-weight:bold;margin-bottom:8px;'></div>
+    <div id='submitPopupMsg' style='font-size:13px;color:#aaa;line-height:1.6;margin-bottom:20px;'></div>
+    <button onclick="document.getElementById('submitPopup').style.display='none'" style='padding:10px 24px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#333;color:white;cursor:pointer;'>
+      OK
+    </button>
   </div>
 </div>
 </body>
