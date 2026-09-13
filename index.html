@@ -600,10 +600,15 @@ function showFinalResult(){
   })
   .then(r => {
     if(!r.ok) throw new Error('HTTP ' + r.status);
-    console.log('Resultat skickat via HTTP-trigger');
+    const el = document.getElementById('submitStatus');
+    if(el) el.innerHTML = '✅ Resultat registrerat';
+    if(el) el.style.color = '#00cc66';
   })
   .catch(err => {
     console.warn('HTTP-trigger misslyckades, öppnar OWA-fallback:', err);
+    const el = document.getElementById('submitStatus');
+    if(el) el.innerHTML = '⚠️ Automatisk rapportering misslyckades – öppnar mail';
+    if(el) el.style.color = '#ffaa00';
     const subject = encodeURIComponent('FG5000|' + (passed ? 'GODKAND' : 'EJ_GODKAND') + '|' + currentUser.name + '|' + currentUser.email + '|' + score + '|' + max + '|' + datum + '|' + sessionId);
     const body = encodeURIComponent(
       'NAMN: ' + currentUser.name + '\n' +
@@ -625,7 +630,7 @@ function showFinalResult(){
     <div style="text-align:center;padding:8px;">
       <div style="font-size:20px;font-weight:bold;color:${color};">${grade}</div>
       <div style="margin-top:4px;font-size:15px;color:#222;">${score} / ${max} poäng</div>
-
+      <div id="submitStatus" style="margin-top:8px;font-size:12px;color:#888;">Skickar resultat...</div>
       <br>
       <button onclick="restartTraining()"
         style="margin-top:8px;padding:7px 16px;background:#333;color:white;
