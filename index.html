@@ -1150,6 +1150,44 @@ function checkQuiz3(){
   document.getElementById('quizNextBtn3').style.display = 'block';
 }
 
+// ---- Kunskapsfrågor 4–6 (flyttade från LBBRAND 2026-11): ett rätt svar per fråga ----
+const QUIZ_EXTRA = {
+  4: { correct: 1, right: 'Om jag är grön (schemafärg) ansvarar jag för att undersöka platsen som larmat och hålla kontakt med rosa (schemafärg). Om jag är rosa ansvarar jag för att hantera brandlarmscentralen.', why: 'Personal ansvarar för att agera utifrån gällande rutiner med att undersöka om det är en brand, eventuellt släcka och bistå med utrymning om det är aktuellt. Vid brandlarm tar grön en brandsläckare och går till platsen som larmat. Rosa stannar i receptionen och hanterar brandlarmet. Vid Brandlarmscentralen ligger rutinblad som beskriver uppgifter. Slussens personal agerar på samma sätt som grön personal.' },
+  5: { correct: 1, right: 'Jag trycker på larmknappen vid brandlarmscentralen, och ringer 112 och meddelar att det brinner. Jag uppger adress Sankt Eriksgatan 4 i Göteborg. Jag talar också om att det är ett stödboende och hur många personer som befinner sig i huset, både boenden och personal', why: 'Lilla Bommen har ett brandlarm som är automatiskt överfört till Räddningstjänsten. Det innebär att larmknappar sänder signal till Räddningstjänsten. Personal ska också ringa 112 för kunna ge mer information. Det kan också vara aktuellt att påbörja utrymning. Rosa ska förbereda en aktuell brandskyddslista med notering om vilka personer som är inne/ute och hur många personal det finns i huset.' },
+  6: { correct: 1, right: 'Jag kvitterar larmet, inom 60 sekunder, på larmlagringen (den lilla panelen) genom att hålla in knapp 1. När grön personal rapporterar att det inte är någon brand återställer jag larmet på larmlagringen (den lilla panelen) genom att hålla in knapp 2.', why: 'Personal får bara hantera larmlagringen vid brandlarm. Nyckel ska bara användas av anläggningsskötare och Räddningstjänsten. Om man återställer med nyckel finns risk att man återställer ett larm som sänts till Räddningstjänsten. Det betraktas alltid som en obefogad utryckning och det medför en avgift för verksamheten.' },
+};
+
+function showQuizQuestionN(n){
+  document.getElementById('quizQ' + (n - 1)).style.display = 'none';
+  document.getElementById('quizQ' + n).style.display = 'block';
+  document.getElementById('quizFeedback' + n).style.display = 'none';
+  document.getElementById('quizNextBtn' + n).style.display = 'none';
+  document.querySelectorAll("input[name='q" + n + "']").forEach(r => { r.checked = false; });
+}
+function showQuizQuestion4(){ showQuizQuestionN(4); }
+function showQuizQuestion5(){ showQuizQuestionN(5); }
+function showQuizQuestion6(){ showQuizQuestionN(6); }
+
+function checkQuizSingle(n){
+  const chosen = document.querySelector("input[name='q" + n + "']:checked");
+  const feedback = document.getElementById('quizFeedback' + n);
+  feedback.style.display = 'block';
+  if(!chosen){
+    feedback.style.color = '#ffaa00';
+    feedback.textContent = 'Välj ett svarsalternativ först.';
+    return;
+  }
+  const q = QUIZ_EXTRA[n];
+  if(parseInt(chosen.value, 10) === q.correct){
+    feedback.style.color = '#55cc88';
+    feedback.textContent = '✅ Rätt! ' + q.why;
+  } else {
+    feedback.style.color = '#ff6666';
+    feedback.textContent = '❌ Inte rätt. Rätt svar: ' + q.right + ' ' + q.why;
+  }
+  document.getElementById('quizNextBtn' + n).style.display = 'block';
+}
+
 function finishQuiz(){
   document.getElementById('quizPopup').style.display = 'none';
   showFinalResult();
@@ -1222,7 +1260,7 @@ function confirmForvarningRutin(){
 
     <!-- Fråga 1 -->
     <div id='quizQ1'>
-      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 1 av 3</h2>
+      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 1 av 6</h2>
       <p style='font-size:13px;color:#ddd;line-height:1.6;margin:0 0 16px;'>Du ansvarar för brandlarmet under arbetspasset. Det går en förvarning.<br><strong style="color:white;">Vem får göra vad med förvarningen?</strong> (flera svar möjliga)</p>
       <div style='display:flex;flex-direction:column;gap:10px;margin-bottom:16px;'>
         <label style='display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
@@ -1245,7 +1283,7 @@ function confirmForvarningRutin(){
 
     <!-- Fråga 2 -->
     <div id='quizQ2' style='display:none;'>
-      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 2 av 3</h2>
+      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 2 av 6</h2>
       <p style='font-size:13px;color:#ddd;line-height:1.6;margin:0 0 16px;'>Du har hanterat ett brandlarm eller en förvarning.<br><strong style="color:white;">Vad gör du efteråt?</strong> (flera svar möjliga)</p>
       <div style='display:flex;flex-direction:column;gap:10px;margin-bottom:16px;'>
         <label style='display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
@@ -1268,7 +1306,7 @@ function confirmForvarningRutin(){
 
     <!-- Fråga 3 -->
     <div id='quizQ3' style='display:none;'>
-      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 3 av 3</h2>
+      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 3 av 6</h2>
       <p style='font-size:13px;color:#ddd;line-height:1.6;margin:0 0 12px;'>Det har gått brandlarm och larmet har sänts till Räddningstjänsten. Du kan se det eftersom <strong style="color:white;">"BRANDKÅR LARMAD"</strong> i larmlagringen har röd markering och <strong style="color:white;">"Larmsändare aktiverad"</strong> lyser rött på brandlarmscentralen.</p>
 
       <!-- Förenklad illustration av panelen -->
@@ -1298,7 +1336,88 @@ function confirmForvarningRutin(){
       </div>
       <div id='quizFeedback3' style='display:none;font-size:13px;line-height:1.6;margin-bottom:14px;padding:10px 14px;background:#2a2a2a;border-radius:8px;'></div>
       <button onclick='checkQuiz3()' style='width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#5aabff;color:#000;cursor:pointer;margin-bottom:8px;'>Kontrollera svar</button>
-      <button id='quizNextBtn3' onclick='finishQuiz()' style='display:none;width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#1a6e1a;color:white;cursor:pointer;'>Se mitt resultat →</button>
+      <button id='quizNextBtn3' onclick='showQuizQuestion4()' style='display:none;width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#1a6e1a;color:white;cursor:pointer;'>Nästa fråga →</button>
+    </div>
+
+    <!-- Fråga 4 -->
+    <div id='quizQ4' style='display:none;'>
+      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 4 av 6</h2>
+      <p style='font-size:13px;color:#ddd;line-height:1.6;margin:0 0 16px;'>Brandlarmet går när du är i tjänst. <strong style="color:white;">Vad gör du?</strong></p>
+      <div style='display:flex;flex-direction:column;gap:10px;margin-bottom:16px;'>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q4' id='q4a' value='0' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          1. Fortsätter som vanligt tills du hör vidare instruktioner
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q4' id='q4b' value='1' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          2. Om jag är grön (schemafärg) ansvarar jag för att undersöka platsen som larmat och hålla kontakt med rosa (schemafärg). Om jag är rosa ansvarar jag för att hantera brandlarmscentralen.
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q4' id='q4c' value='2' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          3. Utrymmer mig själv eftersom det är säkrast
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q4' id='q4d' value='3' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          4. Tar min bil och åker hem
+        </label>
+      </div>
+      <div id='quizFeedback4' style='display:none;font-size:13px;line-height:1.6;margin-bottom:14px;padding:10px 14px;background:#2a2a2a;border-radius:8px;'></div>
+      <button onclick='checkQuizSingle(4)' style='width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#5aabff;color:#000;cursor:pointer;margin-bottom:8px;'>Kontrollera svar</button>
+      <button id='quizNextBtn4' onclick='showQuizQuestion5()' style='display:none;width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#1a6e1a;color:white;cursor:pointer;'>Nästa fråga →</button>
+    </div>
+
+    <!-- Fråga 5 -->
+    <div id='quizQ5' style='display:none;'>
+      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 5 av 6</h2>
+      <p style='font-size:13px;color:#ddd;line-height:1.6;margin:0 0 16px;'>Du är rosa i schemat. <strong style="color:white;">Vad gör du om det är en aktiv brand som ni inte kan släcka?</strong></p>
+      <div style='display:flex;flex-direction:column;gap:10px;margin-bottom:16px;'>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q5' id='q5a' value='0' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          1. Väntar på Räddningstjänsten
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q5' id='q5b' value='1' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          2. Jag trycker på larmknappen vid brandlarmscentralen, och ringer 112 och meddelar att det brinner. Jag uppger adress Sankt Eriksgatan 4 i Göteborg. Jag talar också om att det är ett stödboende och hur många personer som befinner sig i huset, både boenden och personal
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q5' id='q5c' value='2' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          3. Ringer chef i beredskap
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q5' id='q5d' value='3' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          4. Utrymmer boendet
+        </label>
+      </div>
+      <div id='quizFeedback5' style='display:none;font-size:13px;line-height:1.6;margin-bottom:14px;padding:10px 14px;background:#2a2a2a;border-radius:8px;'></div>
+      <button onclick='checkQuizSingle(5)' style='width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#5aabff;color:#000;cursor:pointer;margin-bottom:8px;'>Kontrollera svar</button>
+      <button id='quizNextBtn5' onclick='showQuizQuestion6()' style='display:none;width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#1a6e1a;color:white;cursor:pointer;'>Nästa fråga →</button>
+    </div>
+
+    <!-- Fråga 6 -->
+    <div id='quizQ6' style='display:none;'>
+      <h2 style='margin:0 0 8px;font-size:17px;color:#5aabff;'>🧠 Kunskapsfråga 6 av 6</h2>
+      <p style='font-size:13px;color:#ddd;line-height:1.6;margin:0 0 16px;'>Brandlarmet aktiveras. Du är rosa (schemafärg). <strong style="color:white;">Hur ska brandlarmet hanteras när det vid undersökning visar sig vara ett falsklarm?</strong></p>
+      <div style='display:flex;flex-direction:column;gap:10px;margin-bottom:16px;'>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q6' id='q6a' value='0' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          1. Jag springer till platsen som larmat eftersom jag är lite osäker på hur brandlarmspanelen fungerar
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q6' id='q6b' value='1' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          2. Jag kvitterar larmet, inom 60 sekunder, på larmlagringen (den lilla panelen) genom att hålla in knapp 1. När grön personal rapporterar att det inte är någon brand återställer jag larmet på larmlagringen (den lilla panelen) genom att hålla in knapp 2.
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q6' id='q6c' value='2' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          3. Jag vrider på nyckeln och återställer på den övre panelen
+        </label>
+        <label style='display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#ddd;background:#2a2a2a;border:1px solid #333;border-radius:8px;padding:10px 14px;'>
+          <input type='radio' name='q6' id='q6d' value='3' style='width:16px;height:16px;cursor:pointer;margin-top:1px;flex-shrink:0;'>
+          4. Jag ringer installatören
+        </label>
+      </div>
+      <div id='quizFeedback6' style='display:none;font-size:13px;line-height:1.6;margin-bottom:14px;padding:10px 14px;background:#2a2a2a;border-radius:8px;'></div>
+      <button onclick='checkQuizSingle(6)' style='width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#5aabff;color:#000;cursor:pointer;margin-bottom:8px;'>Kontrollera svar</button>
+      <button id='quizNextBtn6' onclick='finishQuiz()' style='display:none;width:100%;padding:10px;font-size:14px;font-weight:bold;border-radius:8px;border:none;background:#1a6e1a;color:white;cursor:pointer;'>Se mitt resultat →</button>
     </div>
 
   </div>
