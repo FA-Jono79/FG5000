@@ -652,6 +652,11 @@ function restartTraining(){
 // ===== REGISTRERING =====
 let currentUser = { name: '', email: '' };
 
+// Rutinen vid förvarning ska bekräftas en gång per genomgång (nollställs vid ny registrering).
+let forvarningRutinBekraftad = false;
+// true när rutinrutan visas efter fel åtgärd (nyckel) – då är poängen redan satt.
+let forvarningEfterFel = false;
+
 function registerUser(){
   const name  = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
@@ -673,6 +678,7 @@ function registerUser(){
 
   // Nollställ poäng för ny session
   scoreData = { score: 0, scenariosDone: 0, results: [] };
+  forvarningRutinBekraftad = false;
   saveScoreData();
   updateScoreUI();
 
@@ -1009,9 +1015,14 @@ function turnKey(){
       btn2.style.color = "#ffcc00";
       btn2.style.fontWeight = "bold";
     }
-    setTimeout(() => {
-      document.getElementById('forvarningPopup').style.display = 'flex';
-    }, 2000);
+    if(forvarningRutinBekraftad){
+      restart();
+    } else {
+      forvarningEfterFel = true;
+      setTimeout(() => {
+        document.getElementById('forvarningPopup').style.display = 'flex';
+      }, 2000);
+    }
     return;
   }
 
@@ -1030,7 +1041,14 @@ function muteAlarm(){
       btn.style.color = "#ffcc00";
       btn.style.fontWeight = "bold";
     }
+    if(forvarningRutinBekraftad){
+      addScore(3);
+      document.getElementById('screen').innerHTML = '✅ Rätt åtgärd – förvarning tystad (+3p)';
+      restart();
+      return;
+    }
     document.getElementById('screen').innerHTML = '🔇 Förvarning tystad';
+    forvarningEfterFel = false;
     setTimeout(() => {
       document.getElementById('forvarningPopup').style.display = 'flex';
     }, 2000);
@@ -1220,6 +1238,13 @@ function confirmForvarningRutin(){
   const btn = document.getElementById('forvarningConfirmBtn');
   btn.style.opacity = '0.4';
   btn.style.cursor = 'not-allowed';
+  forvarningRutinBekraftad = true;
+  // Efter fel åtgärd är poängen redan dragen – räkna inte scenariot en gång till.
+  if(forvarningEfterFel){
+    forvarningEfterFel = false;
+    restart();
+    return;
+  }
   // Scenariot avslutas med poäng
   addScore(3);
   document.getElementById('screen').innerHTML = '✅ Rätt åtgärd – förvarning tystad (+3p)';
